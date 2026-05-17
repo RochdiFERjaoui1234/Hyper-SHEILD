@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HyperShield Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #eee;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #e94560 0%, #0f3460 100%);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+        
+        .header .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .stat-card .label {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stat-card .value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #e94560;
+        }
+        
+        .stat-card .sub {
+            font-size: 13px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .section {
+            background: rgba(255,255,255,0.03);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .section h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #e94560;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section h2::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: #e94560;
+            border-radius: 2px;
+        }
+        
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .model-card {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .model-card h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        
+        .model-card .score {
+            font-size: 42px;
+            font-weight: 700;
+            color: #4ade80;
+        }
+        
+        .model-card .score-label {
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+        
+        .progress-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #4ade80);
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+        
+        .cluster-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .cluster-table th, .cluster-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .cluster-table th {
+            background: rgba(0,0,0,0.3);
+            color: #aaa;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+        
+        .cluster-table tr:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .family-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .family-tag {
+            background: rgba(233,69,96,0.2);
+            color: #e94560;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            border: 1px solid rgba(233,69,96,0.3);
+        }
+        
+        .zeroday-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        
+        .zeroday-card {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .zeroday-card .strategy {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+        
+        .zeroday-card .stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .zeroday-card .rate {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .zeroday-card .verdict {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 10px;
+        }
+        
+        .verdict-green {
+            background: rgba(74,222,128,0.2);
+            color: #4ade80;
+        }
+        
+        .verdict-yellow {
+            background: rgba(251,191,36,0.2);
+            color: #fbbf24;
+        }
+        
+        .verdict-red {
+            background: rgba(248,113,113,0.2);
+            color: #f87171;
+        }
+        
+        .feature-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .feature-tag {
+            background: rgba(79,70,229,0.2);
+            color: #818cf8;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+        
+        .anomaly-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .anomaly-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .anomaly-item .family {
+            color: #e94560;
+            font-weight: 600;
+        }
+        
+        .anomaly-item .score {
+            color: #4ade80;
+            font-weight: 700;
+        }
+        
+        .rank-high { color: #ef4444; }
+        .rank-medium { color: #f59e0b; }
+        .rank-low { color: #10b981; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .animate-delay-1 { animation-delay: 0.1s; }
+        .animate-delay-2 { animation-delay: 0.2s; }
+        .animate-delay-3 { animation-delay: 0.3s; }
+        .animate-delay-4 { animation-delay: 0.4s; }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.3);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(233,69,96,0.5);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🛡️ HyperShield</h1>
+        <span class="badge">Anti-Ransomware AI Pipeline</span>
+    </div>
+    
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card animate animate-delay-1">
+                <div class="label">Raw Samples Loaded</div>
+                <div class="value">21,752</div>
+                <div class="sub">From ransom.csv dataset</div>
+            </div>
+            <div class="stat-card animate animate-delay-2">
+                <div class="label">Malware Samples</div>
+                <div class="value">10,876</div>
+                <div class="sub">Analyzed for threats</div>
+            </div>
+            <div class="stat-card animate animate-delay-3">
+                <div class="label">Features Used</div>
+                <div class="value">17</div>
+                <div class="sub">Behavioral indicators</div>
+            </div>
+            <div class="stat-card animate animate-delay-4">
+                <div class="label">Anomalies Detected</div>
+                <div class="value">327</div>
+                <div class="sub">3% contamination rate</div>
+            </div>
+        </div>
+        
+        <div class="section animate">
+            <h2>Model Performance</h2>
+            <div class="model-grid">
+                <div class="model-card">
+                    <h3>🤖 Random Forest Classifier</h3>
+                    <div class="score">0.9960</div>
+                    <div class="score-label">Weighted ROC-AUC</div>
+                    <div class="progress-bar">
+                        <div class="fill" style="width: 99.6%"></div>
+                    </div>
+                </div>
+                <div class="model-card">
+                    <h3>🚀 XGBoost Classifier</h3>
+                    <div class="score">0.9973</div>
+                    <div class="score-label">Weighted ROC-AUC</div>
+                    <div class="progress-bar">
+                        <div class="fill" style="width: 99.7%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section animate">
+            <h2>K-Means Clustering</h2>
+            <p style="color: #888; margin-bottom: 20px;">26 ransomware families grouped into 3 behavioral clusters</p>
+            <table class="cluster-table">
+                <thead>
+                    <tr>
+                        <th>Cluster</th>
+                        <th>Sample Count</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="rank-low">Cluster 0</span></td>
+                        <td>10,584</td>
+                        <td>Majority - standard ransomware behavior</td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-medium">Cluster 1</span></td>
+                        <td>280</td>
+                        <td>Elevated process/registry activity</td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-high">Cluster 2</span></td>
+                        <td>12</td>
+                        <td>High-intensity threat variants</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="section animate">
+            <h2>Feature Set</h2>
+            <p style="color: #888; margin-bottom: 15px;">17 behavioral features used for analysis:</p>
+            <div class="feature-list">
+                <span class="feature-tag">registry_read</span>
+                <span class="feature-tag">registry_write</span>
+                <span class="feature-tag">registry_delete</span>
+                <span class="feature-tag">registry_total</span>
+                <span class="feature-tag">network_dns</span>
+                <span class="feature-tag">network_http</span>
+                <span class="feature-tag">network_connections</span>
+                <span class="feature-tag">processes_malicious</span>
+                <span class="feature-tag">processes_suspicious</span>
+                <span class="feature-tag">processes_monitored</span>
+                <span class="feature-tag">total_procsses</span>
+                <span class="feature-tag">files_malicious</span>
+                <span class="feature-tag">files_suspicious</span>
+                <span class="feature-tag">files_text</span>
+                <span class="feature-tag">files_unknown</span>
+                <span class="feature-tag">dlls_calls</span>
+                <span class="feature-tag">apis</span>
+            </div>
+        </div>
+        
+        <div class="section animate">
+            <h2>Top 10 Severe Anomalies</h2>
+            <p style="color: #888; margin-bottom: 15px;">Most critical threats flagged by the ensemble detection engine:</p>
+            <div class="anomaly-list">
+                <div class="anomaly-item">
+                    <span class="family">Raccoon</span>
+                    <span class="score rank-high">22.15</span>
+                    <span style="color: #666; font-size: 12px;">Cluster 2</span>
+                </div>
+                <div class="anomaly-item">
+                    <span class="family">njRat</span>
+                    <span class="score rank-high">15.98</span>
+                    <span style="color: #666; font-size: 12px;">Cluster 1</span>
+                </div>
+                <div class="anomaly-item">
+                    <span class="family">Raccoon</span>
+                    <span class="score rank-high">11.75</span>
+                    <span style="color: #666; font-size: 12px;">Cluster 2</span>
+                </div>
+                <div class="anomaly-item">
+                    <span class="family">NanoCore</span>
+                    <span class="score rank-high">11.48</span>
+                    <span style="color: #666; font-size: 12px;">Cluster 2</span>
+                </div>
+                <div class="anomaly-item">
+                    <span class="family">Gandcrab</span>
+                    <span class="score rank-medium">10.40</span>
+                    <span style="color: #666; font-size: 12px;">Cluster 0</span>
+                </div>
+                <div class="anomaly-item">
+                    <span class="family">Ragnar</span>
+                    <span class="score rank-medium">9.22</span>
+                    <span style="color: #666; font-size: 12px;">Cluster 0</span>
+                </div>
+                <div class="anomaly-item">
+                    <span class="family">Snake</span>
+                    <span class="score rank-medium">8.99</span>
+                    <span style="color: #666; font-size: 12px;">Cluster 2</span>
+                </div>
+                <div class="anomaly-item">
+                    <span class="family">Ragnar</span>
+                    <span class="score rank-medium">8.53</span>
+                    <span style="color: #666; font-size: 12px;">Cluster 0</span>
+                </div>
+                <div class="anomaly-item">
+                    <span class="family">Ragnar</span>
+                    <span class="score rank-medium">8.10</span>
+                    <span style="color: #666; font-size: 12px;">Cluster 0</span>
+                </div>
+                <div class="anomaly-item">
+                    <span class="family">Remcos</span>
+                    <span class="score rank-medium">8.09</span>
+                    <span style="color: #666; font-size: 12px;">Cluster 0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section animate">
+            <h2>Zero-Day Stress Test Results</h2>
+            <p style="color: #888; margin-bottom: 20px;">Synthetic threat generation to evaluate detection resilience:</p>
+            <div class="zeroday-grid">
+                <div class="zeroday-card">
+                    <div class="strategy">GaussianMorph (σ×0.25)</div>
+                    <div class="stats">
+                        <div>
+                            <div class="rate" style="color: #4ade80;">1.0%</div>
+                            <div style="color: #666; font-size: 12px;">2/200 flagged</div>
+                        </div>
+                        <span class="verdict verdict-green">LOW risk</span>
+                    </div>
+                </div>
+                <div class="zeroday-card">
+                    <div class="strategy">CrossBreed (α∈0.3-0.7)</div>
+                    <div class="stats">
+                        <div>
+                            <div class="rate" style="color: #4ade80;">7.3%</div>
+                            <div style="color: #666; font-size: 12px;">11/150 flagged</div>
+                        </div>
+                        <span class="verdict verdict-green">LOW risk</span>
+                    </div>
+                </div>
+                <div class="zeroday-card">
+                    <div class="strategy">CentroidPush (2.5σ)</div>
+                    <div class="stats">
+                        <div>
+                            <div class="rate" style="color: #4ade80;">2.0%</div>
+                            <div style="color: #666; font-size: 12px;">3/150 flagged</div>
+                        </div>
+                        <span class="verdict verdict-green">LOW risk</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section animate">
+            <h2>Ransomware Family Distribution</h2>
+            <p style="color: #888; margin-bottom: 15px;">26 unique ransomware families detected in the dataset:</p>
+            <div class="family-list">
+                <span class="family-tag">Phobos (550)</span>
+                <span class="family-tag">Snake (527)</span>
+                <span class="family-tag">NanoCore (520)</span>
+                <span class="family-tag">Raccoon (518)</span>
+                <span class="family-tag">Remcos (512)</span>
+                <span class="family-tag">njRat (506)</span>
+                <span class="family-tag">Dharma (505)</span>
+                <span class="family-tag">Shade (504)</span>
+                <span class="family-tag">RedLine (500)</span>
+                <span class="family-tag">WannaCry (497)</span>
+                <span class="family-tag">Formbook (473)</span>
+                <span class="family-tag">Gh0st (454)</span>
+                <span class="family-tag">Ryuk (449)</span>
+                <span class="family-tag">Guloader (444)</span>
+                <span class="family-tag">LockBit (438)</span>
+                <span class="family-tag">Gandcrab (382)</span>
+                <span class="family-tag">REvil (347)</span>
+                <span class="family-tag">Glupteba (346)</span>
+                <span class="family-tag">Emotet (346)</span>
+                <span class="family-tag">Agenttesla (337)</span>
+                <span class="family-tag">DarkSide (335)</span>
+                <span class="family-tag">Cerber (332)</span>
+                <span class="family-tag">Qbot (322)</span>
+                <span class="family-tag">Ursnif (309)</span>
+                <span class="family-tag">Maze (290)</span>
+                <span class="family-tag">Ragnar (133)</span>
+            </div>
+        </div>
+        
+        <div class="section animate">
+            <h2>Anomaly Detection Engine</h2>
+            <p style="color: #888; margin-bottom: 15px;">6-model ensemble for robust threat hunting:</p>
+            <div class="model-grid">
+                <div class="model-card">
+                    <h3>🌲 Isolation Forest</h3>
+                    <div style="color: #aaa; font-size: 13px;">Tree-based outlier detection</div>
+                </div>
+                <div class="model-card">
+                    <h3>📍 KNN</h3>
+                    <div style="color: #aaa; font-size: 13px;">K-Nearest Neighbors density</div>
+                </div>
+                <div class="model-card">
+                    <h3>📊 ECOD</h3>
+                    <div style="color: #aaa; font-size: 13px;">Empirical CDF-based</div>
+                </div>
+                <div class="model-card">
+                    <h3>🔄 LOF</h3>
+                    <div style="color: #aaa; font-size: 13px;">Local Outlier Factor</div>
+                </div>
+                <div class="model-card">
+                    <h3>📈 HBOS</h3>
+                    <div style="color: #aaa; font-size: 13px;">Histogram-based</div>
+                </div>
+                <div class="model-card">
+                    <h3>🧠 DeepSVDD</h3>
+                    <div style="color: #aaa; font-size: 13px;">Deep Learning (PyTorch)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
